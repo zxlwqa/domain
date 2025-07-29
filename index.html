@@ -44,18 +44,41 @@
       /* 加载动画 */
       .loading {
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         height: 100vh;
         font-size: 18px;
         color: #666;
+        background: transparent;
+      }
+      .spinner {
+        width: 48px;
+        height: 48px;
+        border: 5px solid #e0e0e0;
+        border-top: 5px solid #007bff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 16px;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .loading-text {
+        font-size: 18px;
+        color: #007bff;
+        letter-spacing: 2px;
       }
     </style>
   </head>
   <body>
     <div id="root">
       <!-- 加载状态 -->
-      <div class="loading">加载中...</div>
+      <div class="loading">
+        <div class="spinner"></div>
+        <div class="loading-text">加载中...</div>
+      </div>
     </div>
     
     <!-- 脚本 -->
