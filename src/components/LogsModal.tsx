@@ -70,10 +70,13 @@ const LogsModal: React.FC<LogsModalProps> = ({ isOpen, onClose }) => {
     try {
       const response = await clearLogs(logType);
       if (response.success) {
+        // 立即清空本地日志列表，提供即时反馈
+        setLogs([]);
+        setTotalPages(1);
+        setCurrentPage(1);
         setAlertMessage('日志清理成功');
         setAlertType('success');
         setAlertModal(true);
-        fetchLogs();
       }
     } catch (error) {
       console.error('清理日志失败:', error);
