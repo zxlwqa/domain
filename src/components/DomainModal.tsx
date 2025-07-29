@@ -6,6 +6,7 @@ interface DomainModalProps {
   isOpen: boolean;
   isEdit: boolean;
   domain: Domain;
+  saving?: boolean;
   onClose: () => void;
   onSubmit: (domain: Domain) => void;
   onChange: (field: string, value: string) => void;
@@ -15,6 +16,7 @@ const DomainModal: React.FC<DomainModalProps> = ({
   isOpen,
   isEdit,
   domain,
+  saving = false,
   onClose,
   onSubmit,
   onChange
@@ -221,8 +223,10 @@ const DomainModal: React.FC<DomainModalProps> = ({
             />
           </div>
           <div className="modal-buttons">
-            <button type="button" className="btn btn-cancel-domain" onClick={onClose}>取消</button>
-            <button type="submit" className="btn btn-save-domain">保存</button>
+            <button type="button" className="btn btn-cancel-domain" onClick={onClose} disabled={saving}>取消</button>
+            <button type="submit" className="btn btn-save-domain" disabled={saving}>
+              {saving ? '保存中...' : '保存'}
+            </button>
           </div>
         </form>
       </div>
