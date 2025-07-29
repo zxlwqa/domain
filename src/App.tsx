@@ -41,6 +41,7 @@ const App: React.FC = () => {
   // 状态管理
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [domains, setDomains] = useState<Domain[]>([]);
   const [search, setSearch] = useState('');
   const [sortField, setSortField] = useState<string | null>(null);
@@ -595,14 +596,29 @@ const App: React.FC = () => {
   }
 
   async function confirmBatchDelete() {
-    const domainsToDelete = selectedIndexes.map((idx: number) => domains[idx]);
-    const newDomains = domains.filter((domain: Domain) => !domainsToDelete.some((d: Domain) => d.domain === domain.domain));
-    await saveDomains(newDomains);
-    setSelectedIndexes([]);
-    await loadDomains();
-    setOpMsg('批量删除成功');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setBatchDeleteModal(false);
+    try {
+      setDeleting(true);
+      const domainsToDelete = selectedIndexes.map((idx: number) => domains[idx]);
+      const newDomains = domains.filter((domain: Domain) => !domainsToDelete.some((d: Domain) => d.domain === domain.domain));
+      
+      // 立即更新本地状态，提供即时反馈
+      setDomains(newDomains);
+      setSelectedIndexes([]);
+      setOpMsg('批量删除成功');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setBatchDeleteModal(false);
+      
+      // 异步保存到服务器
+      await saveDomains(newDomains);
+    } catch (error: any) {
+      // 如果保存失败，回滚本地状态
+      await loadDomains();
+      const errorMessage = error.message || '批量删除失败';
+      setOpMsg(`批量删除失败: ${errorMessage}`);
+      console.error('批量删除失败:', error);
+    } finally {
+      setDeleting(false);
+    }
   }
 
   // 模态框操作
@@ -658,22 +674,42 @@ const App: React.FC = () => {
       
       // 密码验证成功，执行相应的操作
       if (passwordAction === 'delete' && domainToDelete) {
-        await deleteDomain(domainToDelete.domain);
-        await loadDomains();
-        setOpMsg('域名删除成功');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        setDomainToDelete(null);
+        try {
+          setDeleting(true);
+          // 立即更新本地状态，提供即时反馈
+          const updatedDomains = domains.filter(d => d.domain !== domainToDelete.domain);
+          setDomains(updatedDomains);
+          setOpMsg('域名删除成功');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setDomainToDelete(null);
+          setPasswordModal(false);
+          setPasswordAction(null);
+          
+          // 异步删除服务器数据
+          await deleteDomain(domainToDelete.domain);
+        } catch (error: any) {
+          // 如果删除失败，回滚本地状态
+          await loadDomains();
+          const errorMessage = error.message || '删除失败';
+          setOpMsg(`删除失败: ${errorMessage}`);
+          console.error('删除域名失败:', error);
+        } finally {
+          setDeleting(false);
+        }
       } else if (passwordAction === 'batchDelete') {
         setBatchDeleteModal(true);
+        setPasswordModal(false);
+        setPasswordAction(null);
       } else if (passwordAction === 'edit') {
         setModalOpen(true);
+        setPasswordModal(false);
+        setPasswordAction(null);
       } else if (passwordAction === 'renew' && domainToRenew) {
         performRenew(domainToRenew);
         setDomainToRenew(null);
+        setPasswordModal(false);
+        setPasswordAction(null);
       }
-      
-      setPasswordModal(false);
-      setPasswordAction(null);
       
     } catch (error: any) {
       console.error('密码验证失败:', error);
@@ -696,13 +732,28 @@ const App: React.FC = () => {
 
   async function confirmDelete() {
     if (domainToDelete) {
-      await deleteDomain(domainToDelete.domain);
-      await loadDomains();
-      setOpMsg('域名删除成功');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      try {
+        setDeleting(true);
+        // 立即更新本地状态，提供即时反馈
+        const updatedDomains = domains.filter(d => d.domain !== domainToDelete.domain);
+        setDomains(updatedDomains);
+        setOpMsg('域名删除成功');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setDeleteModal(false);
+        setDomainToDelete(null);
+        
+        // 异步删除服务器数据
+        await deleteDomain(domainToDelete.domain);
+      } catch (error: any) {
+        // 如果删除失败，回滚本地状态
+        await loadDomains();
+        const errorMessage = error.message || '删除失败';
+        setOpMsg(`删除失败: ${errorMessage}`);
+        console.error('删除域名失败:', error);
+      } finally {
+        setDeleting(false);
+      }
     }
-    setDeleteModal(false);
-    setDomainToDelete(null);
   }
 
   function handleCloseExpireModal(dontRemind: boolean) {
@@ -812,8 +863,10 @@ const App: React.FC = () => {
     try {
       // 不指定文件名，让后端自动选择最新的备份文件
       const result = await webdavRestore({});
-      // 重新加载域名数据
+      
+      // 恢复成功后重新加载域名数据
       await loadDomains();
+      
       showInfoModal('✅ WebDAV恢复成功', `成功恢复 ${result.domainsCount || 0} 个域名，备份时间: ${result.timestamp || '未知'}`);
       setOpMsg('WebDAV恢复成功');
     } catch (error) {
@@ -959,6 +1012,7 @@ const App: React.FC = () => {
           : '验证并删除'
         }
         cancelText="取消"
+        deleting={deleting}
       />
 
       <SettingsModal
