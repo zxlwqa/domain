@@ -9,6 +9,7 @@ interface PasswordModalProps {
   onCancel: () => void;
   confirmText?: string;
   cancelText?: string;
+  deleting?: boolean;
 }
 
 const PasswordModal: React.FC<PasswordModalProps> = ({
@@ -18,7 +19,8 @@ const PasswordModal: React.FC<PasswordModalProps> = ({
   onConfirm,
   onCancel,
   confirmText = '确认',
-  cancelText = '取消'
+  cancelText = '取消',
+  deleting = false
 }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -98,8 +100,10 @@ const PasswordModal: React.FC<PasswordModalProps> = ({
             </div>
           </div>
           <div className="modal-buttons">
-            <button type="submit" className="btn btn-danger">{confirmText}</button>
-            <button type="button" className="btn btn-secondary" onClick={handleCancel}>{cancelText}</button>
+            <button type="submit" className="btn btn-danger" disabled={deleting}>
+              {deleting ? '删除中...' : confirmText}
+            </button>
+            <button type="button" className="btn btn-secondary" onClick={handleCancel} disabled={deleting}>{cancelText}</button>
           </div>
         </form>
       </div>
