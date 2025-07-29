@@ -73,6 +73,10 @@ CREATE INDEX IF NOT EXISTS idx_logs_domain ON logs(domain);
 ```
 PASSWORD
 ```
+### Cloudflare API 获取域名环境变量
+```
+CF_KEY
+```
 ### WebDAV 备份配置
 ```
 WEBDAV_URL
@@ -102,9 +106,3 @@ QQMSG_KEY
 ```
 QQMSG_QQ
 ```
-
-### 邮件通知
-```
-MAIL_TO
-```
-
