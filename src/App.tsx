@@ -912,6 +912,105 @@ const App: React.FC = () => {
       <div className="header">
         <h1>域名面板</h1>
         <p>查看域名状态、注册商、注册日期、过期日期和使用进度</p>
+        <div className="logo-container" style={{ 
+          marginTop: '15px', 
+          textAlign: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '20px',
+          flexWrap: 'wrap'
+        }}>
+          {/* Logo 1 */}
+          <a 
+            href="https://github.com/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-block',
+              textDecoration: 'none',
+              transition: 'transform 0.2s ease-in-out'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <img 
+              src="/image/github.png" 
+              alt="Logo 1" 
+              style={{
+                height: '60px',
+                width: 'auto',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))'
+              }}
+            />
+          </a>
+
+          {/* Logo 2 */}
+          <a 
+            href="https://cloudflare.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-block',
+              textDecoration: 'none',
+              transition: 'transform 0.2s ease-in-out'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <img 
+              src="/image/cloudflare.png" 
+              alt="Cloudflare" 
+              style={{
+                height: '60px',
+                width: 'auto',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))'
+              }}
+            />
+          </a>
+
+          {/* Logo 3 */}
+          <a 
+            href="https://telegram.org" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-block',
+              textDecoration: 'none',
+              transition: 'transform 0.2s ease-in-out'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <img 
+              src="/image/telegram.png" 
+              alt="Telegram" 
+              style={{
+                height: '60px',
+                width: 'auto',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))'
+              }}
+            />
+          </a>
+        </div>
         <button className="settings-btn" onClick={() => setSettingsModal(true)}>⚙️</button>
       </div>
 
