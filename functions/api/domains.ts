@@ -73,12 +73,29 @@ export const onRequest = async (context: any) => {
       const existingDomainNames = existingDomains.map((d: any) => d.domain);
       const newDomains = body.domains.filter((d: Domain) => !existingDomainNames.includes(d.domain));
       const updatedDomains = body.domains.filter((d: Domain) => existingDomainNames.includes(d.domain));
+      const domainsToDelete = existingDomainNames.filter((domain: string) => !body.domains.some((d: Domain) => d.domain === domain));
       
-      await env.DB.exec('DELETE FROM domains');
-      for (const d of body.domains) {
-        await env.DB.prepare(
-          'INSERT INTO domains (domain, status, registrar, register_date, expire_date, renewUrl) VALUES (?, ?, ?, ?, ?, ?)'
-        ).bind(d.domain, d.status, d.registrar, d.register_date, d.expire_date, d.renewUrl || null).run();
+      // 使用事务进行批量操作，提高性能
+      await env.DB.exec('BEGIN TRANSACTION');
+      
+      try {
+        // 删除不再存在的域名
+        for (const domain of domainsToDelete) {
+          await env.DB.prepare('DELETE FROM domains WHERE domain = ?').bind(domain).run();
+        }
+        
+        // 插入新域名或更新现有域名
+        for (const d of body.domains) {
+          await env.DB.prepare(`
+            INSERT OR REPLACE INTO domains (domain, status, registrar, register_date, expire_date, renewUrl) 
+            VALUES (?, ?, ?, ?, ?, ?)
+          `).bind(d.domain, d.status, d.registrar, d.register_date, d.expire_date, d.renewUrl || null).run();
+        }
+        
+        await env.DB.exec('COMMIT');
+      } catch (error) {
+        await env.DB.exec('ROLLBACK');
+        throw error;
       }
       
       // 记录操作日志
