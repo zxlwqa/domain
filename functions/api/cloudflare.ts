@@ -90,7 +90,7 @@ async function fetchCloudflareDomains(apiKey: string): Promise<Domain[]> {
       domain: zone.name,
       status: zone.status === 'active' ? 'active' : 'pending',
       registrar: 'Cloudflare',
-      register_date: zone.created_date || zone.created_on,
+      register_date: (zone.created_date || zone.created_on) ? (zone.created_date || zone.created_on).split('T')[0] : '',
       expire_date: expireDate.toISOString().split('T')[0],
       renewUrl: `https://dash.cloudflare.com/${zone.id}/domain`
     };
