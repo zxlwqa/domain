@@ -29,9 +29,7 @@
     
     <title>域名面板</title>
     
-    <!-- 内联关键CSS -->
     <style>
-      /* 关键渲染路径CSS */
       body {
         margin: 0;
         padding: 0;
@@ -41,7 +39,6 @@
       #root {
         min-height: 100vh;
       }
-      /* 加载动画 */
       .loading {
         display: flex;
         flex-direction: column;
@@ -50,7 +47,24 @@
         height: 100vh;
         font-size: 18px;
         color: #666;
-        background: transparent;
+        position: relative;
+        overflow: hidden;
+      }
+      .loading::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('/image/background.jpeg') center center / cover no-repeat;
+        filter: blur(12px);
+        opacity: 0.7;
+        z-index: 0;
+      }
+      .spinner, .loading-text {
+        position: relative;
+        z-index: 1;
       }
       .spinner {
         width: 48px;
@@ -99,12 +113,10 @@
         });
       }
       
-      // 错误监控
       window.addEventListener('error', (event) => {
         console.error('页面错误:', event.error);
       });
       
-      // 未处理的Promise拒绝
       window.addEventListener('unhandledrejection', (event) => {
         console.error('未处理的Promise拒绝:', event.reason);
       });
