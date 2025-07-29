@@ -40,6 +40,7 @@ import LogsModal from './components/LogsModal';
 const App: React.FC = () => {
   // 状态管理
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [domains, setDomains] = useState<Domain[]>([]);
   const [search, setSearch] = useState('');
   const [sortField, setSortField] = useState<string | null>(null);
@@ -612,19 +613,34 @@ const App: React.FC = () => {
   }
 
   async function handleFormSubmit(domain: Domain) {
-    let newDomains = [...domains];
-    if (editIndex >= 0) {
-      newDomains[editIndex] = domain;
-    } else {
-      newDomains.push(domain);
+    try {
+      setSaving(true);
+      let newDomains = [...domains];
+      if (editIndex >= 0) {
+        newDomains[editIndex] = domain;
+      } else {
+        newDomains.push(domain);
+      }
+      
+      // 立即更新本地状态，提供即时反馈
+      setDomains(newDomains);
+      setModalOpen(false);
+      setEditIndex(-1);
+      setForm(defaultDomain);
+      setOpMsg('保存成功');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      // 异步保存到服务器
+      await saveDomains(newDomains);
+    } catch (error: any) {
+      // 如果保存失败，回滚本地状态
+      await loadDomains();
+      const errorMessage = error.message || '保存失败';
+      setOpMsg(`保存失败: ${errorMessage}`);
+      console.error('保存域名失败:', error);
+    } finally {
+      setSaving(false);
     }
-    await saveDomains(newDomains);
-    setModalOpen(false);
-    setEditIndex(-1);
-    setForm(defaultDomain);
-    await loadDomains();
-    setOpMsg('保存成功');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function handleFormChange(field: string, value: string) {
@@ -880,6 +896,7 @@ const App: React.FC = () => {
         isOpen={modalOpen}
         isEdit={editIndex >= 0}
         domain={form}
+        saving={saving}
         onClose={() => setModalOpen(false)}
         onSubmit={handleFormSubmit}
         onChange={handleFormChange}
