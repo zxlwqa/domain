@@ -165,7 +165,7 @@ const DomainTable: React.FC<DomainTableProps> = ({
                 <input 
                   type="checkbox" 
                   onChange={e => onSelectAll(e.target.checked)} 
-                  checked={selectedIndexes.length === paged.length && paged.length > 0} 
+                  checked={paged.length > 0 && paged.every(domain => selectedIndexes.includes(domains.findIndex(d => d.domain === domain.domain)))} 
                 />
               </th>
             </tr>
@@ -198,7 +198,7 @@ const DomainTable: React.FC<DomainTableProps> = ({
             ) : paged.map((domain, index) => {
               const progress = calculateProgress(domain.register_date, domain.expire_date);
               const progressClass = getProgressClass(progress);
-              const checked = selectedIndexes.includes(index + (page - 1) * pageSize);
+              const checked = selectedIndexes.includes(domains.findIndex(d => d.domain === domain.domain));
               const daysLeft = getDaysLeft(domain.expire_date);
               const daysColor = getDaysColor(daysLeft);
               const dynamicStatus = getDynamicStatus(domain.expire_date, warningDays);
@@ -219,8 +219,8 @@ const DomainTable: React.FC<DomainTableProps> = ({
                   </td>}
                   <td>
                     <div className="action-buttons" style={{ display: 'flex', flexDirection: 'row', gap: 8 }}>
-                      <button className="btn-edit" style={{ width: 56, height: 40, padding: 0, textAlign: 'center' }} onClick={() => onEdit(index + (page - 1) * pageSize)}>修改</button>
-                      <button className="btn-delete" style={{ width: 56, height: 40, padding: 0, textAlign: 'center' }} onClick={() => onDelete(index + (page - 1) * pageSize)}>删除</button>
+                      <button className="btn-edit" style={{ width: 56, height: 40, padding: 0, textAlign: 'center' }} onClick={() => onEdit(domains.findIndex(d => d.domain === domain.domain))}>修改</button>
+                      <button className="btn-delete" style={{ width: 56, height: 40, padding: 0, textAlign: 'center' }} onClick={() => onDelete(domains.findIndex(d => d.domain === domain.domain))}>删除</button>
                       <button className="btn-renew" style={{ width: 56, height: 40, padding: 0, textAlign: 'center' }} onClick={() => onRenew(domain)}>续期</button>
                       <button 
                         className="btn-copy" 
@@ -263,7 +263,7 @@ const DomainTable: React.FC<DomainTableProps> = ({
                     <input 
                       type="checkbox" 
                       checked={checked} 
-                      onChange={e => onSelectRow(index + (page - 1) * pageSize, e.target.checked)} 
+                      onChange={e => onSelectRow(domains.findIndex(d => d.domain === domain.domain), e.target.checked)} 
                     />
                   </td>
                 </tr>
