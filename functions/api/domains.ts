@@ -75,27 +75,17 @@ export const onRequest = async (context: any) => {
       const updatedDomains = body.domains.filter((d: Domain) => existingDomainNames.includes(d.domain));
       const domainsToDelete = existingDomainNames.filter((domain: string) => !body.domains.some((d: Domain) => d.domain === domain));
       
-      // 使用事务进行批量操作，提高性能
-      await env.DB.exec('BEGIN TRANSACTION');
+      // 直接使用 INSERT OR REPLACE 进行批量操作
+      for (const d of body.domains) {
+        await env.DB.prepare(`
+          INSERT OR REPLACE INTO domains (domain, status, registrar, register_date, expire_date, renewUrl) 
+          VALUES (?, ?, ?, ?, ?, ?)
+        `).bind(d.domain, d.status, d.registrar, d.register_date, d.expire_date, d.renewUrl || null).run();
+      }
       
-      try {
-        // 删除不再存在的域名
-        for (const domain of domainsToDelete) {
-          await env.DB.prepare('DELETE FROM domains WHERE domain = ?').bind(domain).run();
-        }
-        
-        // 插入新域名或更新现有域名
-        for (const d of body.domains) {
-          await env.DB.prepare(`
-            INSERT OR REPLACE INTO domains (domain, status, registrar, register_date, expire_date, renewUrl) 
-            VALUES (?, ?, ?, ?, ?, ?)
-          `).bind(d.domain, d.status, d.registrar, d.register_date, d.expire_date, d.renewUrl || null).run();
-        }
-        
-        await env.DB.exec('COMMIT');
-      } catch (error) {
-        await env.DB.exec('ROLLBACK');
-        throw error;
+      // 删除不再存在的域名
+      for (const domain of domainsToDelete) {
+        await env.DB.prepare('DELETE FROM domains WHERE domain = ?').bind(domain).run();
       }
       
       // 记录操作日志
