@@ -102,6 +102,10 @@ const App: React.FC = () => {
     const val = localStorage.getItem('carouselInterval');
     return val ? Number(val) : 30;
   });
+  const [carouselEnabled, setCarouselEnabled] = useState(() => {
+    const val = localStorage.getItem('carouselEnabled');
+    return val ? val === 'true' : true;
+  });
   const carouselIndex = useRef(0);
   const carouselTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -180,10 +184,14 @@ const App: React.FC = () => {
         clearInterval(carouselTimer.current);
         carouselTimer.current = null;
       }
-      carouselTimer.current = setInterval(() => {
-        carouselIndex.current = (carouselIndex.current + 1) % carouselImages.length;
-        setBg(carouselIndex.current);
-      }, carouselInterval * 1000);
+      
+      // 只有在轮播启用时才启动定时器
+      if (carouselEnabled) {
+        carouselTimer.current = setInterval(() => {
+          carouselIndex.current = (carouselIndex.current + 1) % carouselImages.length;
+          setBg(carouselIndex.current);
+        }, carouselInterval * 1000);
+      }
     }
 
     // 初始化背景样式
@@ -203,7 +211,7 @@ const App: React.FC = () => {
       }
       window.removeEventListener('resize', handleResize);
     };
-  }, [bgImageUrl, carouselImages, carouselInterval]);
+  }, [bgImageUrl, carouselImages, carouselInterval, carouselEnabled]);
 
   // 组件卸载时清理定时器
   useEffect(() => {
@@ -812,6 +820,7 @@ const App: React.FC = () => {
     notificationMethods: NotificationMethod[];
     bgImageUrl: string;
     carouselInterval: number;
+    carouselEnabled: boolean;
   }) {
     try {
       // 保存通知设置到服务器
@@ -829,6 +838,7 @@ const App: React.FC = () => {
       setNotificationMethods(settings.notificationMethods);
       setBgImageUrl(settings.bgImageUrl);
       setCarouselInterval(settings.carouselInterval);
+      setCarouselEnabled(settings.carouselEnabled);
 
       // 保存到本地存储
       localStorage.setItem('notificationWarningDays', settings.warningDays);
@@ -837,6 +847,7 @@ const App: React.FC = () => {
       localStorage.setItem('notificationMethods', JSON.stringify(settings.notificationMethods));
       localStorage.setItem('customBgImageUrl', settings.bgImageUrl);
       localStorage.setItem('carouselInterval', settings.carouselInterval.toString());
+      localStorage.setItem('carouselEnabled', settings.carouselEnabled.toString());
 
       setOpMsg('设置保存成功');
     } catch (error: any) {
@@ -1235,6 +1246,7 @@ const App: React.FC = () => {
         notificationMethods={notificationMethods}
         bgImageUrl={bgImageUrl}
         carouselInterval={carouselInterval}
+        carouselEnabled={carouselEnabled}
         domains={domains}
         onSave={handleSettingsSave}
         onImportDomains={handleImportDomains}
