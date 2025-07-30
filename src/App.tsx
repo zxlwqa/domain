@@ -598,15 +598,15 @@ const App: React.FC = () => {
   async function confirmBatchDelete() {
     try {
       setDeleting(true);
-      const domainsToDelete = selectedIndexes.map((idx: number) => domains[idx]);
-      const newDomains = domains.filter((domain: Domain) => !domainsToDelete.some((d: Domain) => d.domain === domain.domain));
+    const domainsToDelete = selectedIndexes.map((idx: number) => domains[idx]);
+    const newDomains = domains.filter((domain: Domain) => !domainsToDelete.some((d: Domain) => d.domain === domain.domain));
       
       // 立即更新本地状态，提供即时反馈
       setDomains(newDomains);
-      setSelectedIndexes([]);
-      setOpMsg('批量删除成功');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      setBatchDeleteModal(false);
+    setSelectedIndexes([]);
+    setOpMsg('批量删除成功');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setBatchDeleteModal(false);
       
       // 异步保存到服务器
       await saveDomains(newDomains);
@@ -631,20 +631,20 @@ const App: React.FC = () => {
   async function handleFormSubmit(domain: Domain) {
     try {
       setSaving(true);
-      let newDomains = [...domains];
-      if (editIndex >= 0) {
-        newDomains[editIndex] = domain;
-      } else {
-        newDomains.push(domain);
-      }
+    let newDomains = [...domains];
+    if (editIndex >= 0) {
+      newDomains[editIndex] = domain;
+    } else {
+      newDomains.push(domain);
+    }
       
       // 立即更新本地状态，提供即时反馈
       setDomains(newDomains);
-      setModalOpen(false);
-      setEditIndex(-1);
-      setForm(defaultDomain);
-      setOpMsg('保存成功');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    setModalOpen(false);
+    setEditIndex(-1);
+    setForm(defaultDomain);
+    setOpMsg('保存成功');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
       
       // 异步保存到服务器
       await saveDomains(newDomains);
@@ -679,9 +679,9 @@ const App: React.FC = () => {
           // 立即更新本地状态，提供即时反馈
           const updatedDomains = domains.filter(d => d.domain !== domainToDelete.domain);
           setDomains(updatedDomains);
-          setOpMsg('域名删除成功');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          setDomainToDelete(null);
+        setOpMsg('域名删除成功');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setDomainToDelete(null);
           setPasswordModal(false);
           setPasswordAction(null);
           
@@ -707,8 +707,8 @@ const App: React.FC = () => {
       } else if (passwordAction === 'renew' && domainToRenew) {
         performRenew(domainToRenew);
         setDomainToRenew(null);
-        setPasswordModal(false);
-        setPasswordAction(null);
+      setPasswordModal(false);
+      setPasswordAction(null);
       }
       
     } catch (error: any) {
@@ -737,10 +737,10 @@ const App: React.FC = () => {
         // 立即更新本地状态，提供即时反馈
         const updatedDomains = domains.filter(d => d.domain !== domainToDelete.domain);
         setDomains(updatedDomains);
-        setOpMsg('域名删除成功');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        setDeleteModal(false);
-        setDomainToDelete(null);
+      setOpMsg('域名删除成功');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    setDeleteModal(false);
+    setDomainToDelete(null);
         
         // 异步删除服务器数据
         await deleteDomain(domainToDelete.domain);
@@ -923,7 +923,7 @@ const App: React.FC = () => {
         }}>
           {/* Logo 1 */}
           <a 
-            href="https://github.com/" 
+            href="https://github.com/your-username/your-repo" 
             target="_blank" 
             rel="noopener noreferrer"
             style={{
@@ -939,10 +939,10 @@ const App: React.FC = () => {
             }}
           >
             <img 
-              src="/image/github.png" 
+              src="/image/logo.png" 
               alt="Logo 1" 
               style={{
-                height: '60px',
+                height: '45px',
                 width: 'auto',
                 borderRadius: '8px',
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
@@ -972,7 +972,7 @@ const App: React.FC = () => {
               src="/image/cloudflare.png" 
               alt="Cloudflare" 
               style={{
-                height: '60px',
+                height: '45px',
                 width: 'auto',
                 borderRadius: '8px',
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
@@ -1002,7 +1002,7 @@ const App: React.FC = () => {
               src="/image/telegram.png" 
               alt="Telegram" 
               style={{
-                height: '60px',
+                height: '45px',
                 width: 'auto',
                 borderRadius: '8px',
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
