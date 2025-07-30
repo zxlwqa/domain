@@ -938,7 +938,7 @@ const App: React.FC = () => {
             }}
           >
             <img 
-              src="/image/github.png" 
+              src="/logo/github.png" 
               alt="Logo 1" 
               style={{
                 height: '40px',
@@ -968,7 +968,7 @@ const App: React.FC = () => {
             }}
           >
             <img 
-              src="/image/gitlab.png" 
+              src="/logo/gitlab.png" 
               alt="Cloudflare" 
               style={{
                 height: '40px',
@@ -998,7 +998,7 @@ const App: React.FC = () => {
             }}
           >
             <img 
-              src="/image/youtube.png" 
+              src="/logo/youtube.png" 
               alt="Cloudflare" 
               style={{
                 height: '40px',
@@ -1028,7 +1028,7 @@ const App: React.FC = () => {
             }}
           >
             <img 
-              src="/image/bilibili.png" 
+              src="/logo/bilibili.png" 
               alt="Cloudflare" 
               style={{
                 height: '40px',
@@ -1058,7 +1058,7 @@ const App: React.FC = () => {
             }}
           >
             <img 
-              src="/image/cloudflare.png" 
+              src="/logo/cloudflare.png" 
               alt="Cloudflare" 
               style={{
                 height: '40px',
@@ -1088,7 +1088,7 @@ const App: React.FC = () => {
             }}
           >
             <img 
-              src="/image/telegram.png" 
+              src="/logo/telegram.png" 
               alt="Telegram" 
               style={{
                 height: '40px',
