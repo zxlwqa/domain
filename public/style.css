@@ -10,7 +10,13 @@ body {
     background: url('/image/background.jpeg') no-repeat center center fixed;
     background-size: cover;
     background-position: center center;
+    background-attachment: fixed;
     position: relative;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
 }
 .container {
     max-width: 1200px;
@@ -1466,6 +1472,50 @@ table td.loading {
 }
 
 /* 响应式设计 */
+
+/* 背景图居中显示优化 */
+@media (max-width: 768px) {
+    body {
+        background-size: cover;
+        background-position: center center;
+        background-attachment: scroll; /* 移动端使用scroll而不是fixed */
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        background-size: cover;
+        background-position: center center;
+    }
+}
+
+/* 确保背景图在所有设备上都能完美居中 */
+html {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    min-height: 100vh;
+    width: 100%;
+    background-clip: border-box;
+    background-origin: border-box;
+}
+
+/* 针对不同屏幕尺寸的优化 */
+@media (min-width: 1200px) {
+    body {
+        background-size: cover;
+        background-position: center center;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+    body {
+        background-size: cover;
+        background-position: center center;
+    }
+}
 
 @media (max-width: 768px) {
     .settings-modal-content {
