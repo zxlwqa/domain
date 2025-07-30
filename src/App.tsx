@@ -762,8 +762,7 @@ const App: React.FC = () => {
       localStorage.setItem('dontRemindToday', getTodayString());
       setDontRemindToday(true);
     }
-    // 移除设置 lastNotificationDate 的逻辑，让弹窗在刷新后仍然能显示
-    // 只有在用户选择"今天不再提醒"时才阻止弹窗
+
   }
 
   function showInfoModal(title: string, message: string) {
@@ -923,7 +922,7 @@ const App: React.FC = () => {
         }}>
           {/* Logo 1 */}
           <a 
-            href="https://github.com/your-username/your-repo" 
+            href="https://github.com" 
             target="_blank" 
             rel="noopener noreferrer"
             style={{
@@ -939,10 +938,10 @@ const App: React.FC = () => {
             }}
           >
             <img 
-              src="/image/logo.png" 
+              src="/image/github.png" 
               alt="Logo 1" 
               style={{
-                height: '45px',
+                height: '40px',
                 width: 'auto',
                 borderRadius: '8px',
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
@@ -952,6 +951,96 @@ const App: React.FC = () => {
           </a>
 
           {/* Logo 2 */}
+          <a 
+            href="https://gitlab.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-block',
+              textDecoration: 'none',
+              transition: 'transform 0.2s ease-in-out'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <img 
+              src="/image/gitlab.png" 
+              alt="Cloudflare" 
+              style={{
+                height: '40px',
+                width: 'auto',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))'
+              }}
+            />
+          </a>
+
+          {/* Logo 3 */}
+          <a 
+            href="https://www.youtube.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-block',
+              textDecoration: 'none',
+              transition: 'transform 0.2s ease-in-out'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <img 
+              src="/image/youtube.png" 
+              alt="Cloudflare" 
+              style={{
+                height: '40px',
+                width: 'auto',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))'
+              }}
+            />
+          </a>
+          
+          {/* Logo 4 */}
+          <a 
+            href="https://www.bilibili.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-block',
+              textDecoration: 'none',
+              transition: 'transform 0.2s ease-in-out'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <img 
+              src="/image/bilibili.png" 
+              alt="Cloudflare" 
+              style={{
+                height: '40px',
+                width: 'auto',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))'
+              }}
+            />
+          </a>
+
+          {/* Logo 5 */}
           <a 
             href="https://cloudflare.com" 
             target="_blank" 
@@ -972,7 +1061,7 @@ const App: React.FC = () => {
               src="/image/cloudflare.png" 
               alt="Cloudflare" 
               style={{
-                height: '45px',
+                height: '40px',
                 width: 'auto',
                 borderRadius: '8px',
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
@@ -980,8 +1069,8 @@ const App: React.FC = () => {
               }}
             />
           </a>
-
-          {/* Logo 3 */}
+          
+          {/* Logo 6 */}
           <a 
             href="https://telegram.org" 
             target="_blank" 
@@ -1002,7 +1091,7 @@ const App: React.FC = () => {
               src="/image/telegram.png" 
               alt="Telegram" 
               style={{
-                height: '45px',
+                height: '40px',
                 width: 'auto',
                 borderRadius: '8px',
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
