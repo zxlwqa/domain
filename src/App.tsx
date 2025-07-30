@@ -146,39 +146,62 @@ const App: React.FC = () => {
 
   // 背景图片轮播
   useEffect(() => {
-    if (bgImageUrl && bgImageUrl.trim() !== '') {
-      document.body.style.backgroundImage = `url('${bgImageUrl}')`;
+    // 更新背景图样式的函数
+    function updateBackgroundStyles() {
+      if (bgImageUrl && bgImageUrl.trim() !== '') {
+        document.body.style.backgroundImage = `url('${bgImageUrl}')`;
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundRepeat = 'no-repeat';
+        document.body.style.backgroundPosition = 'center center';
+        // 根据屏幕尺寸设置background-attachment
+        const isMobile = window.innerWidth <= 768;
+        document.body.style.backgroundAttachment = isMobile ? 'scroll' : 'fixed';
+        if (carouselTimer.current) {
+          clearInterval(carouselTimer.current);
+          carouselTimer.current = null;
+        }
+        return;
+      }
+      if (carouselImages.length === 0) return;
+      
+      function setBg(idx: number) {
+        const url = `/image/${carouselImages[idx]}`;
+        document.body.style.backgroundImage = `url('${url}')`;
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundRepeat = 'no-repeat';
+        document.body.style.backgroundPosition = 'center center';
+        // 根据屏幕尺寸设置background-attachment
+        const isMobile = window.innerWidth <= 768;
+        document.body.style.backgroundAttachment = isMobile ? 'scroll' : 'fixed';
+      }
+      
+      setBg(carouselIndex.current);
       if (carouselTimer.current) {
         clearInterval(carouselTimer.current);
         carouselTimer.current = null;
       }
-      return;
+      carouselTimer.current = setInterval(() => {
+        carouselIndex.current = (carouselIndex.current + 1) % carouselImages.length;
+        setBg(carouselIndex.current);
+      }, carouselInterval * 1000);
     }
-    if (carouselImages.length === 0) return;
-    
-    function setBg(idx: number) {
-      const url = `/image/${carouselImages[idx]}`;
-      document.body.style.backgroundImage = `url('${url}')`;
-      document.body.style.backgroundSize = 'cover';
-      document.body.style.backgroundRepeat = 'no-repeat';
-      document.body.style.backgroundPosition = 'center center';
-    }
-    
-    setBg(carouselIndex.current);
-    if (carouselTimer.current) {
-      clearInterval(carouselTimer.current);
-      carouselTimer.current = null;
-    }
-    carouselTimer.current = setInterval(() => {
-      carouselIndex.current = (carouselIndex.current + 1) % carouselImages.length;
-      setBg(carouselIndex.current);
-    }, carouselInterval * 1000);
+
+    // 初始化背景样式
+    updateBackgroundStyles();
+
+    // 监听窗口大小变化
+    const handleResize = () => {
+      updateBackgroundStyles();
+    };
+
+    window.addEventListener('resize', handleResize);
     
     return () => {
       if (carouselTimer.current) {
         clearInterval(carouselTimer.current);
         carouselTimer.current = null;
       }
+      window.removeEventListener('resize', handleResize);
     };
   }, [bgImageUrl, carouselImages, carouselInterval]);
 
