@@ -20,6 +20,7 @@ interface SettingsModalProps {
   notificationMethods: NotificationMethod[];
   bgImageUrl: string;
   carouselInterval: number;
+  carouselEnabled: boolean;
   telegramBotToken?: string;
   telegramChatId?: string;
   wechatSendKey?: string;
@@ -32,6 +33,7 @@ interface SettingsModalProps {
     notificationMethods: NotificationMethod[];
     bgImageUrl: string;
     carouselInterval: number;
+    carouselEnabled: boolean;
     telegramBotToken?: string;
     telegramChatId?: string;
     wechatSendKey?: string;
@@ -52,6 +54,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   notificationMethods,
   bgImageUrl,
   carouselInterval,
+  carouselEnabled,
   domains,
   onSave,
   onImportDomains,
@@ -66,6 +69,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     notificationMethods: [...notificationMethods],
     bgImageUrl,
     carouselInterval,
+    carouselEnabled,
     telegramBotToken: '',
     telegramChatId: '',
     wechatSendKey: '',
@@ -98,15 +102,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         notificationMethods: [...notificationMethods],
         bgImageUrl,
         carouselInterval,
-        emailConfig: '',
+        carouselEnabled,
         telegramBotToken: '',
         telegramChatId: '',
         wechatSendKey: '',
-        qqKey: '',
-        webhookUrl: ''
+        qqKey: ''
       });
     }
-  }, [isOpen, warningDays, notificationEnabled, notificationInterval, notificationMethods, bgImageUrl, carouselInterval]);
+  }, [isOpen, warningDays, notificationEnabled, notificationInterval, notificationMethods, bgImageUrl, carouselInterval, carouselEnabled]);
 
   // 处理文件导入
   const handleFileImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -387,6 +390,21 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 <small className="form-hint">留空则使用轮播背景</small>
               </div>
 
+              <div className="form-group toggle-group">
+                <label className="toggle-label">
+                  <span className="toggle-text">开启背景图轮播</span>
+                  <div className="toggle-switch">
+                    <input
+                      type="checkbox"
+                      className="toggle-input"
+                      checked={form.carouselEnabled}
+                      onChange={e => setForm(prev => ({ ...prev, carouselEnabled: e.target.checked }))}
+                    />
+                    <span className="toggle-slider"></span>
+                  </div>
+                </label>
+              </div>
+
               <div className="form-group">
                 <label className="form-label">轮播间隔（秒）：</label>
                 <input
@@ -396,6 +414,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                   max="300"
                   value={form.carouselInterval}
                   onChange={e => setForm(prev => ({ ...prev, carouselInterval: Number(e.target.value) }))}
+                  disabled={!form.carouselEnabled}
                 />
               </div>
             </div>
