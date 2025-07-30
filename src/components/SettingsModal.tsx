@@ -93,6 +93,20 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   // 前端只需要提供手动配置选项
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // 1. 在组件顶部useState声明图片列表
+  const [imageOptions, setImageOptions] = useState<string[]>([]);
+
+  // 2. useEffect加载images.json
+  useEffect(() => {
+    if (!isOpen) return;
+    fetch('/image/images.json')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setImageOptions(data);
+      })
+      .catch(() => setImageOptions([]));
+  }, [isOpen]);
+
   useEffect(() => {
     if (isOpen) {
       setForm({
@@ -416,6 +430,25 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                   onChange={e => setForm(prev => ({ ...prev, carouselInterval: Number(e.target.value) }))}
                   disabled={!form.carouselEnabled}
                 />
+              </div>
+
+              {/* 新增：图片选择下拉框 */}
+              <div className="form-group">
+                <label className="form-label">选择内置背景图片：</label>
+                <select
+                  className="form-select"
+                  value={imageOptions.includes(form.bgImageUrl.replace('/image/', '')) ? form.bgImageUrl.replace('/image/', '') : ''}
+                  onChange={e => {
+                    const filename = e.target.value;
+                    setForm(prev => ({ ...prev, bgImageUrl: filename ? `/image/${filename}` : '' }));
+                  }}
+                >
+                  <option value="">-- 请选择 --</option>
+                  {imageOptions.map(img => (
+                    <option key={img} value={img}>{img}</option>
+                  ))}
+                </select>
+                <small className="form-hint">选择后会自动填充到上方输入框</small>
               </div>
             </div>
 
