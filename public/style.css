@@ -7,7 +7,7 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     min-height: 100vh;
     color: #333;
-    background: url('/image/background.jpeg') no-repeat center center fixed;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) no-repeat center center fixed;
     background-size: cover;
     background-position: center center;
     background-attachment: fixed;
@@ -17,6 +17,28 @@ body {
     padding: 0;
     width: 100%;
     height: 100%;
+    transition: background-image 0.3s ease-in-out;
+}
+
+/* 背景图加载状态 */
+body.bg-loading {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+body.bg-loaded {
+    background-image: url('/image/background.jpeg');
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+body.bg-error {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* 背景图加载指示器动画 */
+.bg-loading-indicator {
+    animation: slideIn 0.3s ease-out;
 }
 .container {
     max-width: 1200px;
@@ -1253,6 +1275,17 @@ table td.loading {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* 背景图加载动画 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 .logs-empty {
