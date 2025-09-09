@@ -47,7 +47,6 @@
         min-height: 100vh;
       }
       
-      /* 立即显示默认背景图，不等待React加载 */
       body::before {
         content: '';
         position: fixed;
@@ -65,7 +64,6 @@
         transition: opacity 0.5s ease-in-out;
       }
       
-      /* 当React组件加载完成后，隐藏伪元素背景 */
       body.bg-loaded::before {
         opacity: 0;
       }
@@ -77,18 +75,14 @@
     <script type="module" src="/src/main.tsx"></script>
     
     <script>
-      // 背景图片管理工具
       window.BackgroundImageManager = {
-        // 获取所有背景图片路径
         async getAllBackgroundImages() {
           try {
             const response = await fetch('/image/images.json');
             const imageList = await response.json();
             
-            // 确保是数组格式
             const images = Array.isArray(imageList) ? imageList : [];
             
-            // 添加默认背景图
             const allImages = ['/image/background.jpeg'];
             images.forEach(imageName => {
               if (imageName && typeof imageName === 'string') {
@@ -96,7 +90,6 @@
               }
             });
             
-            // 去重并返回
             return [...new Set(allImages)];
           } catch (error) {
             console.warn('无法读取images.json，使用默认背景图:', error);
@@ -104,11 +97,9 @@
           }
         },
         
-        // 预加载所有背景图片
         async preloadAll() {
           const images = await this.getAllBackgroundImages();
           
-          // 并行预加载所有背景图片
           images.forEach(src => {
             const img = new Image();
             img.src = src;
@@ -118,7 +109,6 @@
           return images;
         },
         
-        // 预加载自定义背景图
         preloadCustom() {
           const customBgUrl = localStorage.getItem('customBgImageUrl');
           if (customBgUrl && customBgUrl.trim() !== '') {
@@ -129,12 +119,9 @@
         }
       };
       
-      // 立即开始预加载
       (function() {
-        // 预加载所有背景图片
         window.BackgroundImageManager.preloadAll();
         
-        // 预加载自定义背景图
         window.BackgroundImageManager.preloadCustom();
       })();
     </script>
