@@ -106,8 +106,11 @@ const App: React.FC = () => {
     const val = localStorage.getItem('carouselEnabled');
     return val ? val === 'true' : true;
   });
+  const [bgImageLoaded, setBgImageLoaded] = useState(false);
+  const [bgImageError, setBgImageError] = useState(false);
   const carouselIndex = useRef(0);
   const carouselTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const imageCache = useRef<Map<string, boolean>>(new Map());
 
   // 操作消息
   const [opMsg, setOpMsg] = useState('');
@@ -117,6 +120,50 @@ const App: React.FC = () => {
       return () => clearTimeout(t);
     }
   }, [opMsg]);
+
+  // 图片预加载函数
+  const preloadImage = (src: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      // 检查缓存
+      if (imageCache.current.has(src)) {
+        resolve(true);
+        return;
+      }
+
+      const img = new Image();
+      img.onload = () => {
+        imageCache.current.set(src, true);
+        resolve(true);
+      };
+      img.onerror = () => {
+        imageCache.current.set(src, false);
+        resolve(false);
+      };
+      img.src = src;
+    });
+  };
+
+  // 预加载所有背景图片
+  const preloadAllBackgroundImages = async () => {
+    const imagesToPreload: string[] = [];
+    
+    // 添加自定义背景图
+    if (bgImageUrl && bgImageUrl.trim() !== '') {
+      imagesToPreload.push(bgImageUrl);
+    }
+    
+    // 添加轮播图片
+    carouselImages.forEach(imageName => {
+      imagesToPreload.push(`/image/${imageName}`);
+    });
+    
+    // 添加默认背景图
+    imagesToPreload.push('/image/background.jpeg');
+    
+    // 并行预加载所有图片
+    const preloadPromises = imagesToPreload.map(src => preloadImage(src));
+    await Promise.allSettled(preloadPromises);
+  };
 
   // 初始化
   useEffect(() => {
@@ -148,38 +195,87 @@ const App: React.FC = () => {
     setDontRemindToday(shouldDontRemind);
   }, []);
 
+  // 预加载所有背景图片
+  useEffect(() => {
+    if (carouselImages.length > 0) {
+      preloadAllBackgroundImages().then(() => {
+        console.log('所有背景图片预加载完成');
+      }).catch(error => {
+        console.error('背景图片预加载失败:', error);
+      });
+    }
+  }, [carouselImages, bgImageUrl]);
+
   // 背景图片轮播
   useEffect(() => {
     // 更新背景图样式的函数
-    function updateBackgroundStyles() {
+    async function updateBackgroundStyles() {
+      // 重置状态和CSS类
+      setBgImageLoaded(false);
+      setBgImageError(false);
+      document.body.className = 'bg-loading';
+
       if (bgImageUrl && bgImageUrl.trim() !== '') {
-        document.body.style.backgroundImage = `url('${bgImageUrl}')`;
-        document.body.style.backgroundSize = 'cover';
-        document.body.style.backgroundRepeat = 'no-repeat';
-        document.body.style.backgroundPosition = 'center center';
-        // 根据屏幕尺寸设置background-attachment
-        const isMobile = window.innerWidth <= 768;
-        document.body.style.backgroundAttachment = isMobile ? 'scroll' : 'fixed';
+        // 预加载自定义背景图
+        const isLoaded = await preloadImage(bgImageUrl);
+        if (isLoaded) {
+          document.body.style.backgroundImage = `url('${bgImageUrl}')`;
+          document.body.style.backgroundSize = 'cover';
+          document.body.style.backgroundRepeat = 'no-repeat';
+          document.body.style.backgroundPosition = 'center center';
+          // 根据屏幕尺寸设置background-attachment
+          const isMobile = window.innerWidth <= 768;
+          document.body.style.backgroundAttachment = isMobile ? 'scroll' : 'fixed';
+          document.body.className = 'bg-loaded';
+          setBgImageLoaded(true);
+        } else {
+          setBgImageError(true);
+          // 使用默认背景图作为降级
+          document.body.style.backgroundImage = `url('/image/background.jpeg')`;
+          document.body.style.backgroundSize = 'cover';
+          document.body.style.backgroundRepeat = 'no-repeat';
+          document.body.style.backgroundPosition = 'center center';
+          const isMobile = window.innerWidth <= 768;
+          document.body.style.backgroundAttachment = isMobile ? 'scroll' : 'fixed';
+          document.body.className = 'bg-loaded';
+        }
+        
         if (carouselTimer.current) {
           clearInterval(carouselTimer.current);
           carouselTimer.current = null;
         }
         return;
       }
+      
       if (carouselImages.length === 0) return;
       
-      function setBg(idx: number) {
+      async function setBg(idx: number) {
         const url = `/image/${carouselImages[idx]}`;
-        document.body.style.backgroundImage = `url('${url}')`;
-        document.body.style.backgroundSize = 'cover';
-        document.body.style.backgroundRepeat = 'no-repeat';
-        document.body.style.backgroundPosition = 'center center';
-        // 根据屏幕尺寸设置background-attachment
-        const isMobile = window.innerWidth <= 768;
-        document.body.style.backgroundAttachment = isMobile ? 'scroll' : 'fixed';
+        const isLoaded = await preloadImage(url);
+        if (isLoaded) {
+          document.body.style.backgroundImage = `url('${url}')`;
+          document.body.style.backgroundSize = 'cover';
+          document.body.style.backgroundRepeat = 'no-repeat';
+          document.body.style.backgroundPosition = 'center center';
+          // 根据屏幕尺寸设置background-attachment
+          const isMobile = window.innerWidth <= 768;
+          document.body.style.backgroundAttachment = isMobile ? 'scroll' : 'fixed';
+          document.body.className = 'bg-loaded';
+          setBgImageLoaded(true);
+        } else {
+          setBgImageError(true);
+          // 使用默认背景图作为降级
+          document.body.style.backgroundImage = `url('/image/background.jpeg')`;
+          document.body.style.backgroundSize = 'cover';
+          document.body.style.backgroundRepeat = 'no-repeat';
+          document.body.style.backgroundPosition = 'center center';
+          const isMobile = window.innerWidth <= 768;
+          document.body.style.backgroundAttachment = isMobile ? 'scroll' : 'fixed';
+          document.body.className = 'bg-loaded';
+        }
       }
       
-      setBg(carouselIndex.current);
+      await setBg(carouselIndex.current);
       if (carouselTimer.current) {
         clearInterval(carouselTimer.current);
         carouselTimer.current = null;
@@ -187,9 +283,9 @@ const App: React.FC = () => {
       
       // 只有在轮播启用时才启动定时器
       if (carouselEnabled) {
-        carouselTimer.current = setInterval(() => {
+        carouselTimer.current = setInterval(async () => {
           carouselIndex.current = (carouselIndex.current + 1) % carouselImages.length;
-          setBg(carouselIndex.current);
+          await setBg(carouselIndex.current);
         }, carouselInterval * 1000);
       }
     }
@@ -938,9 +1034,42 @@ const App: React.FC = () => {
     }}>{opMsg}</div>
   ) : null;
 
+  // 背景图加载指示器
+  const BackgroundLoadingIndicator = !bgImageLoaded && !bgImageError ? (
+    <div className="bg-loading-indicator" style={{
+      position: 'fixed',
+      top: '20px',
+      right: '20px',
+      background: 'rgba(255, 255, 255, 0.9)',
+      color: '#333',
+      padding: '8px 16px',
+      borderRadius: 20,
+      fontSize: 14,
+      fontWeight: 500,
+      zIndex: 1000,
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
+      backdropFilter: 'blur(10px)',
+      WebkitBackdropFilter: 'blur(10px)',
+    }}>
+      <div style={{
+        width: '16px',
+        height: '16px',
+        border: '2px solid #667eea',
+        borderTop: '2px solid transparent',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite',
+      }}></div>
+      加载背景图中...
+    </div>
+  ) : null;
+
   return (
     <div className="container" style={{ maxWidth: 1300, margin: '0 auto', padding: 20, position: 'relative', zIndex: 1 }}>
       {GlobalOpMsg}
+      {BackgroundLoadingIndicator}
       
       <div className="header">
         <h1>域名面板</h1>
