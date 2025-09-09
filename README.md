@@ -23,7 +23,6 @@ PASSWORD
 ```
 ### 通过Cloudflare API 添加域名
 创建帐户API令牌，权限：只需区域读取权限
-环境变量
 ```
 CF_KEY
 ```
