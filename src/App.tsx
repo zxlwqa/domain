@@ -278,11 +278,6 @@ const App: React.FC = () => {
   useEffect(() => {
     // 更新背景图样式的函数
     async function updateBackgroundStyles() {
-      // 如果已经有背景图在显示，不要重置状态
-      if (bgImageLoaded && !bgImageError) {
-        return;
-      }
-
       // 重置状态和CSS类
       setBgImageLoaded(false);
       setBgImageError(false);
@@ -348,18 +343,34 @@ const App: React.FC = () => {
         }
       }
       
-      await setBg(carouselIndex.current);
+      // 先清除现有定时器
       if (carouselTimer.current) {
         clearInterval(carouselTimer.current);
         carouselTimer.current = null;
       }
       
-      // 只有在轮播启用时才启动定时器
-      if (carouselEnabled) {
+      // 设置初始背景图
+      await setBg(carouselIndex.current);
+      
+      // 只有在轮播启用且有多张图片时才启动定时器
+      if (carouselEnabled && carouselImages.length > 1) {
+        console.log('启动背景图轮播:', {
+          carouselEnabled,
+          carouselImages: carouselImages.length,
+          carouselInterval,
+          currentIndex: carouselIndex.current
+        });
         carouselTimer.current = setInterval(async () => {
           carouselIndex.current = (carouselIndex.current + 1) % carouselImages.length;
+          console.log('轮播切换到图片:', carouselIndex.current, carouselImages[carouselIndex.current]);
           await setBg(carouselIndex.current);
         }, carouselInterval * 1000);
+      } else {
+        console.log('轮播未启动:', {
+          carouselEnabled,
+          carouselImages: carouselImages.length,
+          reason: !carouselEnabled ? '轮播未启用' : '图片数量不足'
+        });
       }
     }
 
@@ -384,7 +395,7 @@ const App: React.FC = () => {
       }
       window.removeEventListener('resize', handleResize);
     };
-  }, [bgImageUrl, carouselImages, carouselInterval, carouselEnabled, bgImageLoaded, bgImageError]);
+  }, [bgImageUrl, carouselImages, carouselInterval, carouselEnabled]);
 
   // 组件卸载时清理定时器
   useEffect(() => {
