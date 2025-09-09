@@ -1,4 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
+
+// 声明全局背景图片管理工具类型
+declare global {
+  interface Window {
+    BackgroundImageManager: {
+      getAllBackgroundImages(): Promise<string[]>;
+      preloadAll(): Promise<string[]>;
+      preloadCustom(): void;
+    };
+  }
+}
 import {
   fetchDomains,
   saveDomains,
@@ -145,28 +156,85 @@ const App: React.FC = () => {
 
   // 预加载所有背景图片
   const preloadAllBackgroundImages = async () => {
-    const imagesToPreload: string[] = [];
-    
-    // 添加自定义背景图
-    if (bgImageUrl && bgImageUrl.trim() !== '') {
-      imagesToPreload.push(bgImageUrl);
+    try {
+      // 使用全局背景图片管理工具
+      if (window.BackgroundImageManager) {
+        const allImages = await window.BackgroundImageManager.getAllBackgroundImages();
+        
+        // 添加自定义背景图
+        const imagesToPreload = [...allImages];
+        if (bgImageUrl && bgImageUrl.trim() !== '') {
+          imagesToPreload.push(bgImageUrl);
+        }
+        
+        // 去重
+        const uniqueImages = [...new Set(imagesToPreload)];
+        
+        // 并行预加载所有图片
+        const preloadPromises = uniqueImages.map(src => preloadImage(src));
+        await Promise.allSettled(preloadPromises);
+        
+        console.log('React组件预加载背景图片:', uniqueImages);
+      } else {
+        // 降级处理：使用原有逻辑
+        const imagesToPreload: string[] = [];
+        
+        // 添加自定义背景图
+        if (bgImageUrl && bgImageUrl.trim() !== '') {
+          imagesToPreload.push(bgImageUrl);
+        }
+        
+        // 添加轮播图片
+        carouselImages.forEach(imageName => {
+          imagesToPreload.push(`/image/${imageName}`);
+        });
+        
+        // 添加默认背景图
+        imagesToPreload.push('/image/background.jpeg');
+        
+        // 去重
+        const uniqueImages = [...new Set(imagesToPreload)];
+        
+        // 并行预加载所有图片
+        const preloadPromises = uniqueImages.map(src => preloadImage(src));
+        await Promise.allSettled(preloadPromises);
+      }
+    } catch (error) {
+      console.error('预加载背景图片失败:', error);
     }
-    
-    // 添加轮播图片
-    carouselImages.forEach(imageName => {
-      imagesToPreload.push(`/image/${imageName}`);
-    });
-    
-    // 添加默认背景图
-    imagesToPreload.push('/image/background.jpeg');
-    
-    // 并行预加载所有图片
-    const preloadPromises = imagesToPreload.map(src => preloadImage(src));
-    await Promise.allSettled(preloadPromises);
   };
 
   // 初始化
   useEffect(() => {
+    // 立即设置背景图状态，不等待异步加载
+    const initializeBackground = () => {
+      const customBgUrl = localStorage.getItem('customBgImageUrl');
+      if (customBgUrl && customBgUrl.trim() !== '') {
+        // 有自定义背景图，立即显示
+        document.body.style.backgroundImage = `url('${customBgUrl}')`;
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundRepeat = 'no-repeat';
+        document.body.style.backgroundPosition = 'center center';
+        const isMobile = window.innerWidth <= 768;
+        document.body.style.backgroundAttachment = isMobile ? 'scroll' : 'fixed';
+        document.body.className = 'bg-loaded';
+        setBgImageLoaded(true);
+      } else {
+        // 使用默认背景图
+        document.body.style.backgroundImage = `url('/image/background.jpeg')`;
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundRepeat = 'no-repeat';
+        document.body.style.backgroundPosition = 'center center';
+        const isMobile = window.innerWidth <= 768;
+        document.body.style.backgroundAttachment = isMobile ? 'scroll' : 'fixed';
+        document.body.className = 'bg-loaded';
+        setBgImageLoaded(true);
+      }
+    };
+
+    // 立即初始化背景图
+    initializeBackground();
+
     loadDomains();
     loadCarouselImages();
     loadNotificationSettings();
@@ -210,6 +278,11 @@ const App: React.FC = () => {
   useEffect(() => {
     // 更新背景图样式的函数
     async function updateBackgroundStyles() {
+      // 如果已经有背景图在显示，不要重置状态
+      if (bgImageLoaded && !bgImageError) {
+        return;
+      }
+
       // 重置状态和CSS类
       setBgImageLoaded(false);
       setBgImageError(false);
@@ -290,12 +363,16 @@ const App: React.FC = () => {
       }
     }
 
-    // 初始化背景样式
-    updateBackgroundStyles();
+    // 只有在需要更新时才调用
+    if (bgImageUrl || carouselImages.length > 0) {
+      updateBackgroundStyles();
+    }
 
     // 监听窗口大小变化
     const handleResize = () => {
-      updateBackgroundStyles();
+      if (bgImageUrl || carouselImages.length > 0) {
+        updateBackgroundStyles();
+      }
     };
 
     window.addEventListener('resize', handleResize);
@@ -307,7 +384,7 @@ const App: React.FC = () => {
       }
       window.removeEventListener('resize', handleResize);
     };
-  }, [bgImageUrl, carouselImages, carouselInterval, carouselEnabled]);
+  }, [bgImageUrl, carouselImages, carouselInterval, carouselEnabled, bgImageLoaded, bgImageError]);
 
   // 组件卸载时清理定时器
   useEffect(() => {
