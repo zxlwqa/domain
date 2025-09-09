@@ -12,7 +12,7 @@
 Fork该项目到你的 GitHub 仓库
 
 ### 2. Cloudflare Pages 部署
-1. 进入 [Cloudflare Pages](https://dash.cloudflare.com/?to=/:account/pages)，点击"创建项目"
+1. 进入 [Cloudflare Pages](https://dash.cloudflare.com)，点击"创建项目"
 2. 连接你的 GitHub 仓库
 3. 框架预设：React (Vite)
 
@@ -21,7 +21,9 @@ Fork该项目到你的 GitHub 仓库
 ```
 PASSWORD
 ```
-### Cloudflare API 获取域名环境变量
+### 通过Cloudflare API 添加域名
+创建帐户API令牌，权限：只需区域读取权限
+环境变量
 ```
 CF_KEY
 ```
