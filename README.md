@@ -1,6 +1,10 @@
 # 域名展示面板（Cloudflare Pages+D1 版）
 
-一个现代化的域名管理与展示面板，支持域名状态监控、到期提醒（支持 Telegram、微信、QQ、邮件多方式）、可视化展示，适合个人和团队自部署。
+一个现代化的域名管理与展示面板，支持域名状态监控、到期提醒（支持 Telegram、微信、QQ、邮件多方式）、可视化展示，适合个人和部署。
+
+
+---
+
 
 ## 🚀 快速部署
 
@@ -10,15 +14,52 @@ Fork该项目到你的 GitHub 仓库
 ### 2. Cloudflare Pages 部署
 1. 进入 [Cloudflare Pages](https://dash.cloudflare.com/?to=/:account/pages)，点击"创建项目"
 2. 连接你的 GitHub 仓库
-3. 构建设置：
-   - 构建命令：
-     ```
-     npm run build
-     ```
-   - 构建输出目录：
-     ```
-     dist
-     ```
+3. 框架预设：React (Vite)
+
+## 🔧 环境变量配置
+### 管理员密码
+```
+PASSWORD
+```
+### Cloudflare API 获取域名环境变量
+```
+CF_KEY
+```
+### WebDAV 备份配置
+```
+WEBDAV_URL
+```
+```
+WEBDAV_USER
+```
+```
+WEBDAV_PASS
+```
+### Telegram 通知配置
+```
+TG_BOT_TOKEN
+```
+```
+TG_USER_ID
+```
+
+### 微信 Server酱 通知配置
+```
+WECHAT_KEY
+```
+### QQ Qmsg酱 通知配置
+```
+QQMSG_KEY
+```
+```
+QQMSG_QQ
+```
+
+
+---
+
+
+
 ### 3. 配置 D1 数据库
 1. 在 Cloudflare 控制台创建 D1 数据库，命名为 `domain`
 2. 在 Pages 项目设置中绑定 D1 数据库，绑定名为 `DB`
@@ -68,41 +109,3 @@ CREATE INDEX IF NOT EXISTS idx_logs_type ON logs(type);
 CREATE INDEX IF NOT EXISTS idx_logs_domain ON logs(domain);
 ```
 
-## 🔧 环境变量配置
-### 管理员密码
-```
-PASSWORD
-```
-### Cloudflare API 获取域名环境变量
-```
-CF_KEY
-```
-### WebDAV 备份配置
-```
-WEBDAV_URL
-```
-```
-WEBDAV_USER
-```
-```
-WEBDAV_PASS
-```
-### Telegram 通知配置
-```
-TG_BOT_TOKEN
-```
-```
-TG_USER_ID
-```
-
-### 微信 Server酱 通知配置
-```
-WECHAT_KEY
-```
-### QQ Qmsg酱 通知配置
-```
-QQMSG_KEY
-```
-```
-QQMSG_QQ
-```
