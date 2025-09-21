@@ -6,12 +6,13 @@
     <meta name="description" content="域名管理与展示面板，支持域名状态监控、到期提醒、可视化展示" />
     <meta name="keywords" content="域名管理,域名监控,到期提醒,Cloudflare" />
     <meta name="author" content="域名面板" />
-    
+
     <meta name="theme-color" content="#007bff" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="域名面板" />
-    
+
+    <!-- 预加载资源 -->
     <link rel="preload" href="/style.css" as="style" />
     <link rel="preload" href="/image/background.jpeg" as="image" />
     <link rel="preload" href="/image/background2.jpeg" as="image" />
@@ -21,21 +22,27 @@
     <link rel="preload" href="/image/background6.jpeg" as="image" />
 
     <link rel="dns-prefetch" href="//api.cloudflare.com" />
-    
-    <link rel="icon" type="logo/png" sizes="32x32" href="/logo/logo.png" />
-    <link rel="icon" type="logo/png" sizes="16x16" href="/logo/logo.png" />
+
+    <!-- 图标 -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo/logo.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/logo/logo.png" />
     <link rel="apple-touch-icon" href="/logo/logo.png" />
-    
+
     <link rel="stylesheet" href="/style.css" />
-    
+
     <title>域名面板</title>
-    
+
     <style>
       body {
         margin: 0;
         padding: 0;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) no-repeat center center fixed;
+        background: linear-gradient(
+            135deg,
+            rgba(102, 126, 234, 0.6) 0%,
+            rgba(118, 75, 162, 0.6) 100%
+          )
+          no-repeat center center fixed;
         background-size: cover;
         background-position: center center;
         background-attachment: fixed;
@@ -46,7 +53,7 @@
       #root {
         min-height: 100vh;
       }
-      
+
       body::before {
         content: '';
         position: fixed;
@@ -60,74 +67,77 @@
         background-repeat: no-repeat;
         background-attachment: fixed;
         z-index: -1;
-        opacity: 1;
+        opacity: 0.8;
         transition: opacity 0.5s ease-in-out;
       }
-      
+
       body.bg-loaded::before {
         opacity: 0;
       }
     </style>
+
+    <!-- Umami 统计代码 -->
+    <script defer src="https://umami.zxlwq.dpdns.org/script.js" data-website-id="b51869d2-7ad4-46a2-a8ae-2576eefc95f0"></script>
   </head>
   <body>
     <div id="root"></div>
-    
+
+    <!-- React/TSX 入口文件-->
     <script type="module" src="/src/main.tsx"></script>
-    
+
     <script>
       window.BackgroundImageManager = {
         async getAllBackgroundImages() {
           try {
             const response = await fetch('/image/images.json');
             const imageList = await response.json();
-            
+
             const images = Array.isArray(imageList) ? imageList : [];
-            
+
             const allImages = ['/image/background.jpeg'];
-            images.forEach(imageName => {
+            images.forEach((imageName) => {
               if (imageName && typeof imageName === 'string') {
                 allImages.push(`/image/${imageName}`);
               }
             });
-            
+
             return [...new Set(allImages)];
           } catch (error) {
             console.warn('无法读取images.json，使用默认背景图:', error);
             return ['/image/background.jpeg'];
           }
         },
-        
+
         async preloadAll() {
           const images = await this.getAllBackgroundImages();
-          
-          images.forEach(src => {
+
+          images.forEach((src) => {
             const img = new Image();
             img.src = src;
           });
-          
+
           console.log('预加载背景图片:', images);
           return images;
         },
-        
+
         preloadCustom() {
           const customBgUrl = localStorage.getItem('customBgImageUrl');
           if (customBgUrl && customBgUrl.trim() !== '') {
             const img = new Image();
             img.src = customBgUrl;
-            console.log('预加载自定义背景图:', customBgUrl);
+            document.body.style.backgroundImage = `url('${customBgUrl}')`;
+            console.log('预加载并应用自定义背景图:', customBgUrl);
           }
-        }
+        },
       };
-      
-      (function() {
+
+      (function () {
         window.BackgroundImageManager.preloadAll();
-        
         window.BackgroundImageManager.preloadCustom();
       })();
     </script>
-    
-    <script>
 
+    <script>
       if ('performance' in window) {
         window.addEventListener('load', () => {
           const perfData = performance.getEntriesByType('navigation')[0];
@@ -139,14 +149,14 @@
           }
         });
       }
-      
+
       window.addEventListener('error', (event) => {
         console.error('页面错误:', event.error);
       });
-      
+
       window.addEventListener('unhandledrejection', (event) => {
         console.error('未处理的Promise拒绝:', event.reason);
       });
     </script>
   </body>
-</html> 
+</html>
