@@ -8,21 +8,25 @@
 
 <p align="center">
   <a href="https://opensource.org/licenses/MIT">
-    <img src="https://img.shields.io/badge/License-MIT-lightgrey.svg?logo=open-source-initiative&logoColor=3DA639" alt="License: MIT">
+    <img src="https://img.shields.io/badge/License-MIT-lightgrey.svg?logo=open-source-initiative&logoColor=lightgrey" alt="License: MIT">
   </a>
   <a href="https://reactjs.org/">
-    <img src="https://img.shields.io/badge/React-18.3.1-lightgrey.svg?logo=react&logoColor=61DAFB" alt="React">
+    <img src="https://img.shields.io/badge/React-18.3.1-lightblue.svg?logo=react&logoColor=61DAFB" alt="React">
   </a>
   <a href="https://vitejs.dev/">
-    <img src="https://img.shields.io/badge/Vite-5.4.8-lightgrey.svg?logo=vite&logoColor=646CFF" alt="Vite">
+    <img src="https://img.shields.io/badge/Vite-5.4.8-violet.svg?logo=vite&logoColor=646CFF" alt="Vite">
   </a>
   <a href="https://www.typescriptlang.org/">
-    <img src="https://img.shields.io/badge/TypeScript-4.9.5-lightgrey.svg?logo=typescript&logoColor=3178C6" alt="TypeScript">
+    <img src="https://img.shields.io/badge/TypeScript-4.9.5-blue.svg?logo=typescript&logoColor=3178C6" alt="TypeScript">
+  </a>
+  <a href="https://github.com/zxlwq/domain">
+    <img src="https://img.shields.io/badge/GitHub-Repo-black.svg?logo=github&logoColor=black" alt="GitHub Repo">
   </a>
   <a href="https://pages.cloudflare.com/">
-    <img src="https://img.shields.io/badge/Cloudflare-Pages-lightgrey.svg?logo=cloudflare&logoColor=F38020" alt="Cloudflare Pages">
+    <img src="https://img.shields.io/badge/Cloudflare-Pages-orange.svg?logo=cloudflare&logoColor=F38020" alt="Cloudflare Pages">
   </a>
 </p>
+
 
 ![domain](./domain.png)
 
