@@ -2,6 +2,29 @@
 
 一个现代化的域名管理与展示面板，支持域名状态监控、到期提醒（支持 Telegram、微信、QQ、邮件多方式）、可视化展示，适合个人和部署。
 
+<p align="center">
+  <img src="./logo.png" alt="logo" />
+</p>
+
+<p align="center">
+  <a href="https://opensource.org/licenses/MIT">
+    <img src="https://img.shields.io/badge/License-MIT-lightgrey.svg?logo=open-source-initiative&logoColor=3DA639" alt="License: MIT">
+  </a>
+  <a href="https://reactjs.org/">
+    <img src="https://img.shields.io/badge/React-18.3.1-lightgrey.svg?logo=react&logoColor=61DAFB" alt="React">
+  </a>
+  <a href="https://vitejs.dev/">
+    <img src="https://img.shields.io/badge/Vite-5.4.8-lightgrey.svg?logo=vite&logoColor=646CFF" alt="Vite">
+  </a>
+  <a href="https://pages.cloudflare.com/">
+    <img src="https://img.shields.io/badge/Cloudflare-Pages-lightgrey.svg?logo=cloudflare&logoColor=F38020" alt="Cloudflare Pages">
+  </a>
+  <a href="https://github.com/zxlwq/music">
+    <img src="https://img.shields.io/badge/GitHub-Repo-181717.svg?logo=github&logoColor=white" alt="GitHub Repo">
+  </a>
+</p>
+
+![domain](./domain.png)
 
 ---
 
