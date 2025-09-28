@@ -16,6 +16,9 @@
   <a href="https://vitejs.dev/">
     <img src="https://img.shields.io/badge/Vite-5.4.8-lightgrey.svg?logo=vite&logoColor=646CFF" alt="Vite">
   </a>
+  <a href="https://www.typescriptlang.org/">
+    <img src="https://img.shields.io/badge/TypeScript-4.9.5-lightgrey.svg?logo=typescript&logoColor=3178C6" alt="TypeScript">
+  </a>
   <a href="https://pages.cloudflare.com/">
     <img src="https://img.shields.io/badge/Cloudflare-Pages-lightgrey.svg?logo=cloudflare&logoColor=F38020" alt="Cloudflare Pages">
   </a>
