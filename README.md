@@ -19,9 +19,6 @@
   <a href="https://pages.cloudflare.com/">
     <img src="https://img.shields.io/badge/Cloudflare-Pages-lightgrey.svg?logo=cloudflare&logoColor=F38020" alt="Cloudflare Pages">
   </a>
-  <a href="https://github.com/zxlwq/music">
-    <img src="https://img.shields.io/badge/GitHub-Repo-181717.svg?logo=github&logoColor=white" alt="GitHub Repo">
-  </a>
 </p>
 
 ![domain](./domain.png)
