@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="域名状态监控、到期提醒、可视化展示" />
+    <meta name="keywords" content="域名管理,域名监控,到期提醒,Cloudflare" />
+    <meta name="author" content="域名面板" />
+
+    <meta name="theme-color" content="#007bff" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="域名面板" />
+
+    <!-- 预加载资源 -->
+    <link rel="preload" href="/style.css" as="style" />
+    <link rel="preload" href="/image/background.webp" as="image" />
+    <link rel="preload" href="/image/background2.webp" as="image" />
+    <link rel="preload" href="/image/background3.webp" as="image" />
+    <link rel="preload" href="/image/background4.webp" as="image" />
+    <link rel="preload" href="/image/background5.webp" as="image" />
+    <link rel="preload" href="/image/background6.webp" as="image" />
+    <link rel="preload" href="/image/images.json" as="fetch" crossorigin="anonymous" />
+
+    <link rel="dns-prefetch" href="//api.cloudflare.com" />
+
+    <!-- 图标 -->
+    <link rel="icon" type="image/x-icon" sizes="32x32" href="/favicon.ico" />
+    <link rel="icon" type="image/x-icon" sizes="16x16" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/favicon.ico" />
+
+    <script>
+      (function ensureFaviconRequested() {
+        try {
+          var existing = document.querySelector('link[rel="icon"]');
+          var href = '/favicon.ico?v=' + Date.now();
+          if (existing) {
+            existing.href = href;
+          } else {
+            var link = document.createElement('link');
+            link.rel = 'icon';
+            link.type = 'image/x-icon';
+            link.href = href;
+            document.head.appendChild(link);
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js').catch(function(){});
+        });
+      }
+    </script>
+
+    <link rel="stylesheet" href="/style.css" />
+
+    <title>域名面板</title>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: transparent;
+        min-height: 100vh;
+        width: 100%;
+        transition: background-image 0.3s ease-in-out;
+      }
+      #root {
+        min-height: 100vh;
+      }
+
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('/image/background.webp');
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        z-index: -1;
+        opacity: 0.8;
+        transition: opacity 0.5s ease-in-out;
+      }
+
+      body.bg-loaded::before {
+        opacity: 0;
+      }
+    </style>
+
+    <!-- Umami 统计代码 -->
+    <script defer src="https://umami.zxlwq.dpdns.org/script.js" data-website-id="b51869d2-7ad4-46a2-a8ae-2576eefc95f0"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- React/TSX 入口文件-->
+    <script type="module" src="/src/main.tsx"></script>
+
+    <script>
+      window.BackgroundImageManager = {
+        async getAllBackgroundImages() {
+          try {
+            const response = await fetch('/image/images.json');
+            const imageList = await response.json();
+
+            const images = Array.isArray(imageList) ? imageList : [];
+
+            const allImages = ['/image/background.webp'];
+            images.forEach((imageName) => {
+              if (imageName && typeof imageName === 'string') {
+                allImages.push(`/image/${imageName}`);
+              }
+            });
+
+            return [...new Set(allImages)];
+          } catch (error) {
+            console.warn('无法读取images.json，使用默认背景图:', error);
+            return ['/image/background.webp'];
+          }
+        },
+
+        async preloadAll() {
+          const images = await this.getAllBackgroundImages();
+
+          images.forEach((src) => {
+            const img = new Image();
+            img.src = src;
+          });
+
+          return images;
+        },
+
+        preloadCustom() {
+          const customBgUrl = localStorage.getItem('customBgImageUrl');
+          if (customBgUrl && customBgUrl.trim() !== '') {
+            const img = new Image();
+            img.src = customBgUrl;
+            document.body.style.backgroundImage = `url('${customBgUrl}')`;
+            console.log('预加载并应用自定义背景图:', customBgUrl);
+          }
+        },
+      };
+
+      (function () {
+        window.BackgroundImageManager.preloadAll();
+        window.BackgroundImageManager.preloadCustom();
+      })();
+    </script>
+
+    <script>
+      if ('performance' in window) {
+        window.addEventListener('load', () => {
+          const perfData = performance.getEntriesByType('navigation')[0];
+          if (perfData && perfData.loadEventEnd && perfData.loadEventStart) {
+            const loadTime = perfData.loadEventEnd - perfData.loadEventStart;
+            if (loadTime >= 0) {
+              console.log('页面加载时间:', loadTime.toFixed(2), 'ms');
+            }
+          }
+        });
+      }
+
+      window.addEventListener('error', (event) => {
+        console.error('页面错误:', event.error);
+      });
+
+      window.addEventListener('unhandledrejection', (event) => {
+        console.error('未处理的Promise拒绝:', event.reason);
+      });
+    </script>
+  </body>
+</html>

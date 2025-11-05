@@ -1,0 +1,108 @@
+name: 使用抱脸创建域名面板
+
+on:
+  workflow_dispatch:
+    inputs:
+      Token:
+        description: 'Hugging Face Token（需要写权限）'
+        required: true
+      image:
+        description: 'Docker 镜像地址'
+        required: false
+        default: ''
+      password:
+        description: '管理员密码'
+        required: true
+      database_url:
+        description: 'Neon数据库连接字符串'
+        required: true
+      cf_key:
+        description: 'Cloudflare API Token'
+        required: false
+        default: ''
+      telegram:
+        description: 'Telegram 参数，格式: bot_token,chat_id'
+        required: false
+        default: ''
+      wechat_sendkey:
+        description: '微信Server酱'
+        required: false
+        default: ''
+      qmsg:
+        description: 'Qmsg 参数，格式: key,qq'
+        required: false
+        default: ''
+      webdav:
+        description: 'WebDAV 参数，格式: url,username,password'
+        required: false
+        default: ''
+      git_token:
+        description: 'GitHub Token，用于Gist备份/恢复'
+        required: false
+        default: ''
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: 隐藏输入信息
+        uses: levibostian/action-hide-sensitive-inputs@v1
+
+      - name: 安装 Python 依赖
+        run: |
+          python -m pip install --upgrade pip wheel
+          pip install huggingface_hub
+
+      - name: 运行脚本（domain.py）
+        run: |
+          set -euo pipefail
+
+          TELEGRAM_INPUT="${{ github.event.inputs.telegram }}"
+          QMSG_INPUT="${{ github.event.inputs.qmsg }}"
+          WEBDAV_INPUT="${{ github.event.inputs.webdav }}"
+          GIT_TOKEN="${{ github.event.inputs.git_token }}"
+
+          TG_BOT_TOKEN=""
+          TG_USER_ID=""
+          if [ -n "$TELEGRAM_INPUT" ]; then
+            IFS=',' read -r TG_BOT_TOKEN TG_USER_ID <<< "$TELEGRAM_INPUT"
+          fi
+
+          QMSG_KEY=""
+          QMSG_QQ=""
+          if [ -n "$QMSG_INPUT" ]; then
+            IFS=',' read -r QMSG_KEY QMSG_QQ <<< "$QMSG_INPUT"
+          fi
+
+          WEBDAV_URL=""
+          WEBDAV_USER=""
+          WEBDAV_PASS=""
+          if [ -n "$WEBDAV_INPUT" ]; then
+            IFS=',' read -r WEBDAV_URL WEBDAV_USER WEBDAV_PASS <<< "$WEBDAV_INPUT"
+          fi
+
+          PY_ARGS=(
+            --token "${{ github.event.inputs.Token }}"
+            --image "${{ github.event.inputs.image }}"
+            --password "${{ github.event.inputs.password }}"
+            --database-url "${{ github.event.inputs.database_url }}"
+            --cf-key "${{ github.event.inputs.cf_key }}"
+          )
+
+          [ -n "$TG_BOT_TOKEN" ] && PY_ARGS+=( --tg-bot-token "$TG_BOT_TOKEN" )
+          [ -n "$TG_USER_ID" ] && PY_ARGS+=( --tg-user-id "$TG_USER_ID" )
+          [ -n "${{ github.event.inputs.wechat_sendkey }}" ] && PY_ARGS+=( --wechat-sendkey "${{ github.event.inputs.wechat_sendkey }}" )
+          [ -n "$QMSG_KEY" ] && PY_ARGS+=( --qmsg-key "$QMSG_KEY" )
+          [ -n "$QMSG_QQ" ] && PY_ARGS+=( --qmsg-qq "$QMSG_QQ" )
+          [ -n "$WEBDAV_URL" ] && PY_ARGS+=( --webdav-url "$WEBDAV_URL" )
+          [ -n "$WEBDAV_USER" ] && PY_ARGS+=( --webdav-user "$WEBDAV_USER" )
+          [ -n "$WEBDAV_PASS" ] && PY_ARGS+=( --webdav-pass "$WEBDAV_PASS" )
+          [ -n "$GIT_TOKEN" ] && PY_ARGS+=( --git-token "$GIT_TOKEN" )
+
+          python ./domain.py "${PY_ARGS[@]}"

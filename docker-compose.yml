@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    command: node server/index.js
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=${DATABASE_URL}
+      - CF_KEY=${CF_KEY}
+      - PASSWORD=${PASSWORD}
+      - TG_BOT_TOKEN=${TG_BOT_TOKEN}
+      - TG_USER_ID=${TG_USER_ID}
+      - WECHAT_SENDKEY=${WECHAT_SENDKEY}
+      - QMSG_KEY=${QMSG_KEY}
+      - QMSG_QQ=${QMSG_QQ}
+      - WEBDAV_URL=${WEBDAV_URL}
+      - WEBDAV_USER=${WEBDAV_USER}
+      - WEBDAV_PASS=${WEBDAV_PASS}
+      - GIT_TOKEN=${GIT_TOKEN}
+    volumes:
+      - ./:/app
+    restart: unless-stopped

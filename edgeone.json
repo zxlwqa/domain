@@ -1,0 +1,66 @@
+{
+    "version": 2,
+    "name": "domain",
+    "public": true,
+    "routes": [
+      {
+        "src": "/api/(.*)",
+        "dest": "/edge-functions/api/$1"
+      },
+      {
+        "src": "/favicon.ico",
+        "dest": "/favicon.ico",
+        "headers": {
+          "Cache-Control": "public, max-age=315360000, immutable",
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "image/x-icon"
+        }
+      },
+      {
+        "src": "/image/images.json",
+        "dest": "/image/images.json",
+        "headers": {
+          "Cache-Control": "public, max-age=600, must-revalidate",
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json; charset=utf-8"
+        }
+      },
+      {
+        "src": "/image/(.*)\\.webp",
+        "dest": "/image/$1.webp",
+        "headers": {
+          "Cache-Control": "public, max-age=315360000, immutable",
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "image/webp"
+        }
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/index.html"
+      }
+    ],
+    "functions": {
+      "edge-functions/api/cloudflare.js": {
+        "maxDuration": 30
+      },
+      "edge-functions/api/domains.js": {
+        "maxDuration": 30
+      },
+      "edge-functions/api/logs.js": {
+        "maxDuration": 30
+      },
+        "edge-functions/api/notify.js": {
+          "maxDuration": 30
+      },
+      "edge-functions/api/password.js": {
+        "maxDuration": 30
+      },
+      "edge-functions/api/webdav.js": {
+        "maxDuration": 30
+      }
+    },
+    "buildCommand": "npm run build",
+    "outputDirectory": "dist",
+    "installCommand": "npm install",
+    "framework": "vite"
+  }
